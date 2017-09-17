@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- Peter Nguyen -->
+    <!-- CSCI 297 -->
     <title>Assignment 2</title>
 </head>
 <body>
