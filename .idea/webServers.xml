@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="b3805f3e-208f-4e01-96be-0cdefab16af3" name="Remote Winthrop" url="http://reno.winthrop.edu">
+        <fileTransfer host="reno.winthrop.edu" port="22" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="ad3f062f-a7db-4e7c-9ace-5e7bbf88bf28" name="Local Winthrop" url="http://deltona.birdnest.org/~acc.nguyenp3/">
+        <fileTransfer host="abernathy.winthrop.edu" port="22" rootFolder="/home/acc.nguyenp3/public_html/" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
