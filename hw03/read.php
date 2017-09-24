@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Peter Nguyen -->
+    <!-- CSCI 297 -->
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Peter Nguyen</title>
+    <title>Assignment 3 - Write to File</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
           integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
@@ -17,15 +20,19 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <h3>Peter Nguyen</h3>
-    <h5>CSCI297 - Scripting Languages</h5>
-    <hr>
-    <ul>
-        <li><a href="hw01/">Assignment 1</a></li>
-        <li><a href="hw02/">Assignment 2</a></li>
-        <li><a href="hw03/">Assignment 3</a></li>
-    </ul>
-</div>
+<p>
+    <?php
+    // Open file
+    $filename = "csci297_nguyenp3_hw03";
+    $inFile = fopen($filename, "r") or die("Unable to open file!");
+
+    // Read and output file
+    $contents = fread($inFile, filesize($filename));
+    echo nl2br($contents);
+
+    // Close file
+    fclose($inFile);
+    ?>
+</p>
 </body>
 </html>
