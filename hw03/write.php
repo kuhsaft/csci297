@@ -14,8 +14,7 @@
 
     <style>
         body {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
+            padding: 2rem;
         }
     </style>
 </head>
