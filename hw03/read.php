@@ -23,7 +23,7 @@
 <p>
     <?php
     // Open file
-    $filename = "csci297_nguyenp3_hw03";
+    $filename = "/tmp/csci297_nguyenp3_hw03";
     $inFile = fopen($filename, "r") or die("Unable to open file!");
 
     // Read and output file

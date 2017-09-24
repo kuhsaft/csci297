@@ -22,7 +22,7 @@
 <body>
 <?php
 // Open file
-$filename = "csci297_nguyenp3_hw03";
+$filename = "/tmp/csci297_nguyenp3_hw03";
 $outFile = fopen($filename, "w") or die("Unable to open file!");
 
 function longdate(int $timestamp): string
