@@ -22,7 +22,7 @@
 <p>
     <?php
     // Open file
-    $filename = "/tmp/csci297_nguyenp3_hw03";
+    $filename = sys_get_temp_dir() . "/csci297_nguyenp3_hw03.dat";
     $inFile = fopen($filename, "r") or die("Unable to open file!");
 
     // Read and output file
