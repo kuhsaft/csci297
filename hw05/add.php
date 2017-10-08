@@ -309,7 +309,16 @@ function handlePost()
 
     // Add dates to file as JSON
     $file = sys_get_temp_dir()."/csci297_nguyenp3_hw05.dat";
+    if (!file_exists($file)) { // Create file if does not exist
+        if (file_put_contents($file, '') === false) {
+            die("Error: cannot store time slots.");
+        }
+    }
+
     $json = json_decode(file_get_contents($file), true);
+    if ($json == null) { // If file cannot be decoded
+        $json = [];
+    }
 
     $formatTime = function (string $date, string $time): string {
         $dateTime = DateTime::createFromFormat("Y-m-d H:i:s", "${date} ${time}");
@@ -321,7 +330,7 @@ function handlePost()
     $timesAdded = [];
 
     // Date not in file
-    if (is_null($json[$_POST['date']])) {
+    if (!array_key_exists($_POST['date'], $json)) {
         // Add date with all times
         $json[$_POST['date']] = $_POST['time'];
 
