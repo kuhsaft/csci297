@@ -20,16 +20,8 @@
             font-weight: 600;
         }
 
-        section {
-            margin-bottom: 3rem;
-        }
-
-        section h3 {
-            margin-bottom: 1rem;
-        }
-
-        table.calendar tbody tr {
-            height: 6em;
+        table.calendar tr:not(:last-child) {
+            border-bottom: 2px solid #9E9E9E;
         }
 
         table.calendar thead tr th {
@@ -37,44 +29,72 @@
         }
 
         table.calendar tbody tr td {
-            padding: 0;
-            height: 100%;
+            padding: .5rem 0;
+            min-width: 6.5rem;
+            height: 10rem;
         }
 
         table.calendar tbody tr td.disabled {
-            color: #555;
-            background: #888;
+            color: #9E9E9E;
+            background: #BDBDBD;
             pointer-events: none;
         }
 
         table.calendar tbody tr td.today {
             font-weight: 600;
-            color: #000;
+            color: #212121;
         }
 
         table.calendar tbody tr td:not(:last-child) {
             border-right: 1px solid #e9ecef;
         }
 
-        table.calendar tbody tr td input[type=radio] {
+        table.calendar td label {
+            padding: 0.1rem .75rem;
+            width: 100%;
+            display: block;
+        }
+
+        table.calendar td label.month {
+            font-size: 1.25rem;
+        }
+
+        table.calendar td .time-slot label {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            text-align: center;
+            margin: 0;
+        }
+
+        table.calendar td .time-slot.disabled {
+            background: #FFEB3B;
+            pointer-events: none;
+            font-weight: 600;
+        }
+
+        table.calendar td .time-slot input[type="checkbox"] {
             display: none;
         }
 
-        table.calendar tbody tr td label {
-            padding: .75rem;
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        table.calendar tbody tr td:not(.disabled) input[type="radio"]:not(:checked) ~ label:hover {
+        table.calendar td:not(.disabled) .time-slot input[type="checkbox"]:not(:checked) ~ label:hover {
             cursor: pointer;
             background: #eee;
             font-weight: 600;
         }
 
-        table.calendar tbody tr td:not(.disabled) input[type="radio"]:checked ~ label {
-            background: #FFEB3B;
+        table.calendar td:not(.disabled) .time-slot input[type="checkbox"]:checked ~ label {
+            cursor: pointer;
+            background: #2196F3;
+            font-weight: 800;
+        }
+
+        table.calendar td:not(.disabled) .time-slot input[type="checkbox"]:checked ~ label:hover {
+            cursor: pointer;
+            background: #1E88E5;
             font-weight: 800;
         }
     </style>
@@ -113,26 +133,24 @@ function isTimeValid(DateTime $dateTime): bool
     return false;
 }
 
-function printForm()
+function printForm(array $data)
 {
     // Calendar Header
     print <<<HTML
 <form method="post">
-        <section>
-            <h3>Select a Day</h3>
-            <table class="table table-responsive calendar">
-                <thead class="thead-inverse">
-                <tr>
-                    <th>Sunday</th>
-                    <th>Monday</th>
-                    <th>Tuesday</th>
-                    <th>Wednesday</th>
-                    <th>Thursday</th>
-                    <th>Friday</th>
-                    <th>Saturday</th>
-                </tr>
-                </thead>
-                <tbody>
+    <table class="table table-responsive calendar">
+        <thead class="thead-inverse">
+        <tr>
+            <th>Sunday</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+        </tr>
+        </thead>
+        <tbody>
 HTML;
 
     // Calendar body
@@ -141,17 +159,37 @@ HTML;
 
     $numWeeks = (date("w") === "0") ? 3 : 4; // Only show 3 weeks if current day is Sunday
 
-    for ($i = 0; $i < $numWeeks; ++$i) {
+    for ($i = 0; $i < $numWeeks; ++$i) { // For each week
         print "<tr>";
-        for ($j = 0; $j < 7; ++$j) {
-            $isDisabled = isDateValid($date) ? "" : "disabled";
+        for ($j = 0; $j < 7; ++$j) { // For each day in week
+            $isDisabled = !isDateValid($date) ? "disabled" : "";
             $isToday = ($date->format("Y-m-d") === date("Y-m-d")) ? "today" : "";
-            $timestamp = $date->format("Y-m-d");
 
             print "<td class=\"${isDisabled} ${isToday}\">";
-            print "<input type=\"radio\" id=\"${timestamp}\" name=\"date\" value=\"${timestamp}\"/>";
-            print "<label for=\"${timestamp}\">".$date->format("m/d")."</label>";
+            print "<label class='month'>".$date->format("m/d")."</label>"; // Month label
+
+            if ($isDisabled !== "disabled") { // Only show times if valid day
+                $date->setTime(8, 0, 0, 0);
+
+                // 8:00 AM to 6:00 PM
+                for ($k = 0; $k < 21; ++$k) {
+                    $label = $date->format("h:i A");
+                    $day = $date->format("Y-m-d");
+                    $time = $date->format("H:i:sO");
+
+                    $timeDisabled = (array_key_exists($day, $data) && in_array($time, $data[$day])) ? "disabled" : "";
+
+                    print "<div class='time-slot ${timeDisabled}'>";
+                    print "<input type='checkbox' id='${day}T${time}' name='${day}[]' value='${time}'/>";
+                    print "<label for='${day}T${time}'>${label}</label>";
+                    print "</div>";
+
+                    $date->add(new DateInterval("P0DT0H30M")); // Add 30 minutes
+                }
+            }
+
             print "</td>";
+
             $date->add(new DateInterval("P1D"));
         }
         print "</tr>";
@@ -160,58 +198,7 @@ HTML;
     print <<<HTML
 </tbody>
 </table>
-</section>
-<section>
-    <h3>Pick Times</h3>
-    <div class="row">
-        <div class="col">
-HTML;
-
-    $time = new DateTime();
-    $time->setTime(8, 0);
-
-    // 8:00 AM to 11:30 AM
-    for ($i = 0; $i < 8; ++$i) {
-        $label = $time->format("h:i A");
-        $timestamp = $time->format("H:i:00");
-
-        print "<div class=\"form-check\">";
-        print "<label class=\"form-check-label\">";
-        print "<input class=\"form-check-input\" type=\"checkbox\" name=\"time[]\" value=\"${timestamp}\">";
-        print "&nbsp;${label}";
-        print "</label>";
-        print "</div>";
-
-        $time->add(new DateInterval("P0DT0H30M")); // Add 30 minutes
-    }
-
-    print <<<HTML
-        </div>
-        <div class="col">
-HTML;
-
-    // 12:00 PM to 6:00 PM
-    for ($i = 0; $i < 13; ++$i) {
-        $label = $time->format("h:i A");
-        $timestamp = $time->format("H:i:00");
-
-        print "<div class=\"form-check\">";
-        print "<label class=\"form-check-label\">";
-        print "<input class=\"form-check-input\" type=\"checkbox\" name=\"time[]\" value=\"${timestamp}\">";
-        print "&nbsp;${label}";
-        print "</label>";
-        print "</div>";
-
-        $time->add(new DateInterval("P0DT0H30M")); // Add 30 minutes
-    }
-
-    print <<<HTML
-        </div>
-    </div>
-</section>
-<section>
-    <button class="btn btn-success btn-block" type="submit">Add Time Slots</button>
-</section>
+<button class="btn btn-success btn-block" type="submit">Add Time Slots</button>
 </form>
 HTML;
 }
@@ -219,152 +206,116 @@ HTML;
 function printErrors(array $errors)
 {
     foreach ($errors as $error) {
-        print "<div class=\"alert alert-danger\" role=\"alert\">${error}</div>";
+        print "<div class='alert alert-danger' role='alert'>${error}</div>";
     }
 }
 
-function printTimesAlreadyAdded(DateTime $dateTime, array $times)
+function printDateErrors(array $dateErrors)
 {
-    $numAdded = count($times);
-    if ($numAdded == 0) {
-        return;
+    foreach ($dateErrors as $date => $errors) {
+        print "<div class='alert alert-danger' role='alert'><strong>${date}</strong>";
+
+        foreach ($errors as $error) {
+            print "<br>${error}";
+        }
+
+        print '</div>';
     }
-
-    if ($numAdded == 1) {
-        $message = "Time already added: ";
-    } else {
-        $message = "Times already added: ";
-    }
-
-    $date = $dateTime->format("m/d");
-    $message .= implode(", ", $times);
-
-    print "<div class=\"alert alert-danger\" role=\"alert\"><strong>${date}</strong><br>${message}.</div>";
 }
 
-function printTimesAdded(DateTime $dateTime, array $times)
+function printDatesAdded(array $datesAdded)
 {
-    $numAdded = count($times);
-    if ($numAdded == 0) {
-        return;
+    foreach ($datesAdded as $date => $times) {
+        print "<div class='alert alert-success' role='alert'><strong>${date}</strong><br>";
+
+        $message = '<strong>'.implode("</strong>, <strong>", $times).'</strong>';
+        print "Added: ${message}";
+
+        print '</div>';
     }
-
-    if ($numAdded == 1) {
-        $message = "Time added: ";
-    } else {
-        $message = "Times added: ";
-    }
-
-    $date = $dateTime->format("m/d");
-    $message .= implode(", ", $times);
-
-    print "<div class=\"alert alert-success\" role=\"alert\"><strong>${date}</strong><br>${message}.</div>";
 }
 
-function handlePost()
+function handlePost(array $data): array
 {
     $errors = [];
+    $dateErrors = [];
+    $datesAdded = [];
 
-    // Guards
-    // Check date input
-    $dateTime = new DateTime($_POST['date']);
-    if (is_null($_POST['date'])) {
-        $errors[] = "You must select a date.";
-    } elseif (!isDateValid($dateTime)) {
-        $errors[] = "Invalid date: ${_POST['date']}";
+    if (empty($_POST)) {
+        $errors[] = 'You must select a time.';
     }
 
-    // Check time input
-    if (is_null($_POST['time']) || empty($_POST['time'])) {
-        $errors[] = "You must select at least one time.";
-    } else {
-        foreach ($_POST['time'] as $time) {
-            // Time value cannot be blank
-            if ($time === "") {
-                $errors[] = "Invalid time.";
-                continue;
+    // Check if each day is valid
+    foreach ($_POST as $day => $times) {
+        $date = DateTime::createFromFormat('Y-m-d', $day);
+
+        if ($date === false) {
+            $errors[] = 'Invalid day: '.$day.'.';
+        } elseif (!isDateValid($date)) {
+            $errors[] = 'Invalid day: '.$date->format("m/d").'.';
+        } else {
+            $monthDay = $date->format("m/d");
+
+            if (is_null($times) || empty($times)) {
+                $errors[] = 'You must select a time.';
             }
 
-            // Check if valid time format
-            $timeDateTime = DateTime::createFromFormat("Y-m-d H:i:s", "1970-01-01 ${time}");
-            if ($timeDateTime === false) {
-                $errors[] = "Invalid time format: ${time}.";
-                continue;
+            $timesAlreadyAdded = [];
+
+            // Check if each time for each day is valid
+            foreach ($times as $time) {
+                $datetime = DateTime::createFromFormat(DateTime::ISO8601, "${day}T${time}");
+                if ($datetime === false) {
+                    $dateErrors[$monthDay][] = 'Invalid time: '.$time;
+                } elseif (!isTimeValid($datetime)) {
+                    $dateErrors[$monthDay][] = 'Invalid time: '.$datetime->format("h:i A");
+                } else {
+                    // Date does not exist or time not added
+                    if (array_key_exists($day, $data) && in_array($time, $data[$day])) {
+                        $timesAlreadyAdded[] = $datetime->format("h:i A");
+                    } else {
+                        $data[$day][] = $time; // Add time
+                        $datesAdded[$monthDay][] = $datetime->format("h:i A");
+                    }
+                }
             }
 
-            // Check if valid time
-            $formattedTime = $timeDateTime->format("h:i A");
-            if (!isTimeValid($timeDateTime)) {
-                $errors[] = "Invalid time: ${formattedTime}.";
-            }
-        }
-    }
-
-    // Do not add values if there is an error
-    if (!empty($errors)) {
-        printErrors($errors);
-
-        return;
-    }
-
-    // Add dates to file as JSON
-    $file = sys_get_temp_dir()."/csci297_nguyenp3_hw05.dat";
-    if (!file_exists($file)) { // Create file if does not exist
-        if (file_put_contents($file, '') === false) {
-            die("Error: cannot store time slots.");
-        }
-    }
-
-    $json = json_decode(file_get_contents($file), true);
-    if ($json == null) { // If file cannot be decoded
-        $json = [];
-    }
-
-    $formatTime = function (string $date, string $time): string {
-        $dateTime = DateTime::createFromFormat("Y-m-d H:i:s", "${date} ${time}");
-
-        return $dateTime->format("h:i A");
-    };
-
-    $timesAlreadyAdded = [];
-    $timesAdded = [];
-
-    // Date not in file
-    if (!array_key_exists($_POST['date'], $json)) {
-        // Add date with all times
-        $json[$_POST['date']] = $_POST['time'];
-
-        foreach ($_POST['time'] as $time) {
-            $timesAdded[] = $formatTime($_POST['date'], $time);
-        }
-    } else {
-        foreach ($_POST['time'] as $time) {
-            $formattedTime = $formatTime($_POST['date'], $time);
-
-            if (in_array($time, $json[$_POST['date']])) { // Time already added for date
-                $timesAlreadyAdded[] = $formattedTime;
-            } else {
-                $json[$_POST['date']][] = $time;
-                $timesAdded[] = $formattedTime;
+            if (!empty($timesAlreadyAdded)) {
+                $message = '<strong>'.implode("</strong>, <strong>", $timesAlreadyAdded).'</strong>';
+                $dateErrors[$monthDay][] = "Already added: ${message}";
             }
         }
     }
 
-    printTimesAlreadyAdded($dateTime, $timesAlreadyAdded);
-    printTimesAdded($dateTime, $timesAdded);
+    printErrors($errors);
+    printDateErrors($dateErrors);
+    printDatesAdded($datesAdded);
 
-    file_put_contents($file, json_encode($json));
+    return $data;
 }
 
 ?>
 <div class="container">
     <h2 align="center" class="title">Add New Available Times for Advising</h2>
     <?php
+    $file = sys_get_temp_dir()."/csci297_nguyenp3_hw05.dat";
+    if (!file_exists($file)) { // Create file if does not exist
+        if (file_put_contents($file, '') === false) {
+            die("Error: cannot read time slots.");
+        }
+    }
+
+    $data = json_decode(file_get_contents($file), true);
+    if ($data == null) { // If file cannot be decoded
+        $data = [];
+    }
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        handlePost();
-        printForm();
+        $data = handlePost($data);
+        file_put_contents($file, json_encode($data));
+        printForm($data);
     } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        printForm();
+        printForm($data);
     } else {
         http_response_code(500);
         echo "<h1>HTTP METHOD NOT SUPPORTED</h1>";
