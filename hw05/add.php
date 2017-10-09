@@ -169,7 +169,7 @@ HTML;
             print "<label class='month'>".$date->format("m/d")."</label>"; // Month label
 
             if ($isDisabled !== "disabled") { // Only show times if valid day
-                $date->setTime(8, 0, 0, 0);
+                $date->setTime(8, 0, 0);
 
                 // 8:00 AM to 6:00 PM
                 for ($k = 0; $k < 21; ++$k) {
