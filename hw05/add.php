@@ -20,6 +20,12 @@
             font-weight: 600;
         }
 
+        table.calendar {
+            display: block;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
         table.calendar tr:not(:last-child) {
             border-bottom: 2px solid #9E9E9E;
         }
@@ -40,7 +46,7 @@
             pointer-events: none;
         }
 
-        table.calendar tbody tr td.today {
+        table.calendar tbody tr td.today label.month {
             font-weight: 600;
             color: #212121;
         }
@@ -101,10 +107,20 @@
 </head>
 <body>
 <?php
-function isDateValid(DateTime $dateTime): bool
+function isWeekend(DateTime $dateTime): bool
 {
     $weekday = $dateTime->format("w");
-    if ($weekday === "0" || $weekday === "6") // Can't be weekend
+    if ($weekday === "0" || $weekday === "6")
+    {
+        return true;
+    }
+
+    return false;
+}
+
+function isDateValid(DateTime $dateTime): bool
+{
+    if (isWeekend($dateTime))
     {
         return false;
     }
@@ -117,6 +133,10 @@ function isDateValid(DateTime $dateTime): bool
 
     if (intval($diff->format("%a") > 21)) {
         return false;
+    }
+
+    if (date("Y-m-d") === $dateTime->format("Y-m-d")) {
+        return false; // Can't be today
     }
 
     return true;
@@ -168,7 +188,7 @@ HTML;
             print "<td class=\"${isDisabled} ${isToday}\">";
             print "<label class='month'>".$date->format("m/d")."</label>"; // Month label
 
-            if ($isDisabled !== "disabled") { // Only show times if valid day
+            if (!isWeekend($date)) { // Only show times if valid day
                 $date->setTime(8, 0, 0);
 
                 // 8:00 AM to 6:00 PM
@@ -180,7 +200,7 @@ HTML;
                     $timeDisabled = (array_key_exists($day, $data) && in_array($time, $data[$day])) ? "disabled" : "";
 
                     print "<div class='time-slot ${timeDisabled}'>";
-                    print "<input type='checkbox' id='${day}T${time}' name='${day}[]' value='${time}'/>";
+                    print "<input type='checkbox' id='${day}T${time}' name='${day}[]' value='${time}' ${timeDisabled}/>";
                     print "<label for='${day}T${time}'>${label}</label>";
                     print "</div>";
 
