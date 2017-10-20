@@ -8,102 +8,7 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
           integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-
-    <style type="text/css">
-        body {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-        }
-
-        .title {
-            margin-bottom: 2rem;
-            font-weight: 600;
-        }
-
-        table.calendar {
-            display: block;
-            max-height: 75vh;
-            overflow-y: auto;
-        }
-
-        table.calendar tr:not(:last-child) {
-            border-bottom: 2px solid #9E9E9E;
-        }
-
-        table.calendar thead tr th {
-            width: 10em;
-        }
-
-        table.calendar tbody tr td {
-            padding: .5rem 0;
-            min-width: 6.5rem;
-            height: 10rem;
-        }
-
-        table.calendar tbody tr td.disabled {
-            color: #9E9E9E;
-            background: #BDBDBD;
-            pointer-events: none;
-        }
-
-        table.calendar tbody tr td.today label.month {
-            font-weight: 600;
-            color: #212121;
-        }
-
-        table.calendar tbody tr td:not(:last-child) {
-            border-right: 1px solid #e9ecef;
-        }
-
-        table.calendar td label {
-            padding: 0.1rem .75rem;
-            width: 100%;
-            display: block;
-        }
-
-        table.calendar td label.month {
-            font-size: 1.25rem;
-        }
-
-        table.calendar td .time-slot label {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            text-align: center;
-            margin: 0;
-        }
-
-        table.calendar td .time-slot.disabled {
-            background: #FFEB3B;
-            pointer-events: none;
-            font-weight: 600;
-        }
-
-        table.calendar td .time-slot input[type="checkbox"] {
-            display: none;
-        }
-
-        table.calendar td:not(.disabled) .time-slot input[type="checkbox"]:not(:checked) ~ label:hover {
-            cursor: pointer;
-            background: #eee;
-            font-weight: 600;
-        }
-
-        table.calendar td:not(.disabled) .time-slot input[type="checkbox"]:checked ~ label {
-            cursor: pointer;
-            background: #2196F3;
-            font-weight: 800;
-        }
-
-        table.calendar td:not(.disabled) .time-slot input[type="checkbox"]:checked ~ label:hover {
-            cursor: pointer;
-            background: #1E88E5;
-            font-weight: 800;
-        }
-    </style>
+    <link rel="stylesheet" href="calendar.css">
 </head>
 <body>
 <?php
@@ -131,12 +36,8 @@ function isDateValid(DateTime $dateTime): bool
         return false;
     }
 
-    if (intval($diff->format("%a") > 21)) {
+    if ($diff->days == 1 || $diff->days >= 21) {
         return false;
-    }
-
-    if (date("Y-m-d") === $dateTime->format("Y-m-d")) {
-        return false; // Can't be today
     }
 
     return true;
@@ -175,6 +76,7 @@ HTML;
 
     // Calendar body
     $date = new DateTime();
+    $date->setTime(0, 0, 0);
     $date->sub(new DateInterval("P".date("w")."D")); // Get the first day of the week
 
     $numWeeks = (date("w") === "0") ? 3 : 4; // Only show 3 weeks if current day is Sunday
