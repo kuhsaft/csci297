@@ -170,6 +170,7 @@ function handlePost(array $data): array
     // Check if each day is valid
     foreach ($_POST as $day => $times) {
         $date = DateTime::createFromFormat('Y-m-d', $day);
+        $date->setTime(0, 0, 0);
 
         if ($date === false) {
             $errors[] = 'Invalid day: '.$day.'.';
