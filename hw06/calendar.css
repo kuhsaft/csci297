@@ -1,0 +1,97 @@
+body {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.title {
+    margin-bottom: 2rem;
+    font-weight: 600;
+}
+
+.title ~ .subtitle {
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+}
+
+table.calendar {
+    display: block;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+table.calendar tr:not(:last-child) {
+    border-bottom: 2px solid #9E9E9E;
+}
+
+table.calendar thead tr th {
+    width: 10em;
+}
+
+table.calendar tbody tr td {
+    padding: .5rem 0;
+    min-width: 6.5rem;
+    height: 10rem;
+}
+
+table.calendar tbody tr td.disabled {
+    color: #9E9E9E;
+    background: #BDBDBD;
+    pointer-events: none;
+}
+
+table.calendar tbody tr td.today label.month {
+    font-weight: 600;
+    color: #212121;
+}
+
+table.calendar tbody tr td:not(:last-child) {
+    border-right: 1px solid #e9ecef;
+}
+
+table.calendar td label {
+    padding: 0.1rem .75rem;
+    width: 100%;
+    display: block;
+}
+
+table.calendar td label.month {
+    font-size: 1.25rem;
+}
+
+table.calendar td .time-slot label {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    text-align: center;
+    margin: 0;
+}
+
+table.calendar td .time-slot.disabled {
+    background: #FFEB3B;
+    pointer-events: none;
+    font-weight: 600;
+}
+
+table.calendar td .time-slot input {
+    display: none;
+}
+
+table.calendar td:not(.disabled) .time-slot input:not(:checked) ~ label:hover {
+    cursor: pointer;
+    background: #eee;
+    font-weight: 600;
+}
+
+table.calendar td:not(.disabled) .time-slot input:checked ~ label {
+    cursor: pointer;
+    background: #2196F3;
+    font-weight: 800;
+}
+
+table.calendar td:not(.disabled) .time-slot input:checked ~ label:hover {
+    cursor: pointer;
+    background: #1E88E5;
+    font-weight: 800;
+}
