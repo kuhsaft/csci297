@@ -31,12 +31,12 @@ function isDateValid(DateTime $dateTime): bool
     }
 
     $diff = (new DateTime())->diff($dateTime);
-    if ($diff->format("%R") === "-") // Can't be in past
+    if ($diff->format("%R") === "" || $diff->format("%R") === "-") // Can't be in past
     {
         return false;
     }
 
-    if ($diff->days == 1 || $diff->days >= 21) {
+    if ($diff->days == 0 || $diff->days > 21) {
         return false;
     }
 

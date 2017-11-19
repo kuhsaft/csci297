@@ -24,17 +24,18 @@ function isWeekend(DateTime $dateTime): bool
 
 function isDateValid(DateTime $dateTime): bool
 {
-    if (isWeekend($dateTime)) {
-        return false;
-    }
-
-    $diff = (new DateTime())->diff($dateTime);
-    if ($diff->format("%R") === "-") // Can't be in past
+    if (isWeekend($dateTime))
     {
         return false;
     }
 
-    if ($diff->days == 1 || $diff->days >= 21) {
+    $diff = (new DateTime())->diff($dateTime);
+    if ($diff->format("%R") === "" || $diff->format("%R") === "-") // Can't be in past
+    {
+        return false;
+    }
+
+    if ($diff->days == 0 || $diff->days > 21) {
         return false;
     }
 
