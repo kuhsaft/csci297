@@ -136,7 +136,7 @@ HTML;
 <div class="container">
     <?php
     $DbConn = new PDO(
-        "mysql:host=deltona.birdnest.org;dbname={$config['dbname']};charset=utf8mb4",
+        "mysql:host={$config['dbhost']};dbname={$config['dbname']};charset=utf8mb4",
         $config['dbuser'],
         $config['dbpass'],
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
