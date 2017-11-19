@@ -8,6 +8,11 @@ body {
     font-weight: 600;
 }
 
+.title ~ .subtitle {
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+}
+
 table.calendar {
     display: block;
     max-height: 75vh;
@@ -69,23 +74,23 @@ table.calendar td .time-slot.disabled {
     font-weight: 600;
 }
 
-table.calendar td .time-slot input[type="checkbox"] {
+table.calendar td .time-slot input {
     display: none;
 }
 
-table.calendar td:not(.disabled) .time-slot input[type="checkbox"]:not(:checked) ~ label:hover {
+table.calendar td:not(.disabled) .time-slot input:not(:checked) ~ label:hover {
     cursor: pointer;
     background: #eee;
     font-weight: 600;
 }
 
-table.calendar td:not(.disabled) .time-slot input[type="checkbox"]:checked ~ label {
+table.calendar td:not(.disabled) .time-slot input:checked ~ label {
     cursor: pointer;
     background: #2196F3;
     font-weight: 800;
 }
 
-table.calendar td:not(.disabled) .time-slot input[type="checkbox"]:checked ~ label:hover {
+table.calendar td:not(.disabled) .time-slot input:checked ~ label:hover {
     cursor: pointer;
     background: #1E88E5;
     font-weight: 800;

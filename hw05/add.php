@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Assignment 5</title>
+    <title>Add Available Appointment Times</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
           integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
@@ -99,7 +99,7 @@ HTML;
                     $day = $date->format("Y-m-d");
                     $time = $date->format("H:i:sO");
 
-                    $timeDisabled = (array_key_exists($day, $data) && in_array($time, $data[$day])) ? "disabled" : "";
+                    $timeDisabled = (array_key_exists($day, $data) && array_key_exists($time, $data[$day])) ? "disabled" : "";
 
                     print "<div class='time-slot ${timeDisabled}'>";
                     print "<input type='checkbox' id='${day}T${time}' name='${day}[]' value='${time}' ${timeDisabled}/>";
@@ -194,10 +194,10 @@ function handlePost(array $data): array
                     $dateErrors[$monthDay][] = 'Invalid time: '.$datetime->format("h:i A");
                 } else {
                     // Date does not exist or time not added
-                    if (array_key_exists($day, $data) && in_array($time, $data[$day])) {
+                    if (array_key_exists($day, $data) && array_key_exists($time, $data[$day])) {
                         $timesAlreadyAdded[] = $datetime->format("h:i A");
                     } else {
-                        $data[$day][] = $time; // Add time
+                        $data[$day][$time] = null; // Add time
                         $datesAdded[$monthDay][] = $datetime->format("h:i A");
                     }
                 }
@@ -220,25 +220,26 @@ function handlePost(array $data): array
 ?>
 <div class="container">
     <h2 align="center" class="title">Add New Available Times for Advising</h2>
+    <h4 align="center" class="subtitle">Select Times to Add</h4>
     <?php
-    $file = sys_get_temp_dir()."/csci297_nguyenp3_hw05.dat";
+    $file = sys_get_temp_dir()."/csci297_nguyenp3_hw06.dat";
     if (!file_exists($file)) { // Create file if does not exist
         if (file_put_contents($file, '') === false) {
             die("Error: cannot read time slots.");
         }
     }
 
-    $data = json_decode(file_get_contents($file), true);
-    if ($data == null) { // If file cannot be decoded
-        $data = [];
+    $times = json_decode(file_get_contents($file), true);
+    if ($times == null) { // If file cannot be decoded
+        $times = [];
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $data = handlePost($data);
-        file_put_contents($file, json_encode($data));
-        printCalendar($data);
+        $times = handlePost($times);
+        file_put_contents($file, json_encode($times));
+        printForm($times);
     } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        printCalendar($data);
+        printForm($times);
     } else {
         http_response_code(500);
         echo "<h1>HTTP METHOD NOT SUPPORTED</h1>";
