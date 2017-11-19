@@ -24,8 +24,7 @@ function isWeekend(DateTime $dateTime): bool
 
 function isDateValid(DateTime $dateTime): bool
 {
-    if (isWeekend($dateTime))
-    {
+    if (isWeekend($dateTime)) {
         return false;
     }
 
@@ -35,7 +34,7 @@ function isDateValid(DateTime $dateTime): bool
         return false;
     }
 
-    if ($diff->days == 0 || $diff->days > 21) {
+    if ($diff->days > 21) {
         return false;
     }
 
