@@ -40,7 +40,7 @@ function isDateValid(DateTime $dateTime): bool
     }
 
     $diff = (new DateTime())->diff($dateTime);
-    if ($diff->format("%R") === "" || $diff->format("%R") === "-") // Can't be in past
+    if ($diff->format("%R") === "-") // Can't be in past
     {
         return false;
     }
