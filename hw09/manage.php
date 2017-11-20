@@ -72,7 +72,7 @@ function printForm(PDO $dbConn)
 
     // Calendar Header
     print <<<HTML
-<form method="post">
+<form method="post" onsubmit="return confirmForm();">
     <table class="table table-responsive calendar">
         <thead class="thead-inverse">
         <tr>
@@ -121,8 +121,8 @@ HTML;
 
                     $timeSlotClass = 'time-slot'.($timeEnabled ? ' enabled' : '');
                     $name = $timeEnabled ? "remove[${day}][]" : "insert[${day}][]";
-                    $id = "${day}T${time}";
                     $label = $date->format("h:i A");
+                    $id = $date->format("F jS") . " at " . $label;
 
                     print "<div class='$timeSlotClass'>";
                     print "<input type='checkbox' id='$id' name='$name' value='$time' hidden/>";
@@ -291,5 +291,11 @@ function handlePost(PDO $dbConn)
     }
     ?>
 </div>
+
+<script
+        src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+        crossorigin="anonymous"></script>
+<script type="application/javascript" src="manage.js"></script>
 </body>
 </html>
