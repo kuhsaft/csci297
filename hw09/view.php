@@ -31,9 +31,10 @@ function getAppointments(PDO $dbConn): array
 {
     $result = [];
 
-    $stmt = $dbConn->query("SELECT date, time, name FROM appointments WHERE name IS NOT NULL");
+    $stmt = $dbConn->query("SELECT date, time, email, name FROM appointments WHERE email IS NOT NULL");
     while ($row = $stmt->fetch()) {
-        $result[$row['date']][$row['time']] = $row['name'];
+        $result[$row['date']][$row['time']]['email'] = $row['email'];
+        $result[$row['date']][$row['time']]['name'] = $row['name'];
     }
 
     return $result;
@@ -123,10 +124,14 @@ HTML;
                         array_key_exists($time, $data[$day]) &&
                         !is_null($data[$day][$time])
                     ) {
-                        $name = $data[$day][$time];
+                        $email = $data[$day][$time]['email'];
+                        $name = $data[$day][$time]['name'];
+                        $subject = "Regarding appointment on " . $date->format("d/m/y") . " at ${label}";
 
                         print "<div class='time-slot'>";
-                        print "<label for='$id'>$label<br><strong>${name}</strong></label>";
+                        print "<label for='$id'>$label<br>";
+                        print "<strong><a href='mailto:${email}?subject=${subject}'>${name}</a></strong>";
+                        print "</label>";
                         print "</div>";
                     }
 
