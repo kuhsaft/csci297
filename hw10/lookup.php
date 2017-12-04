@@ -44,7 +44,7 @@ function printSuccess(DateTime $datetime)
     print '</div>';
 }
 
-function findAppointment(PDO $dbConn, string $email): void
+function findAppointment(PDO $dbConn, string $email)
 {
     // Check if email already exists
     $email = strtolower($email);
