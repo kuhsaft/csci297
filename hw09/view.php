@@ -75,6 +75,7 @@ function printCalendar(PDO $dbConn)
 
     // Calendar Header
     print <<<HTML
+<h2 align="center" class="title">Upcoming Appointments</h2>
 <table class="table table-responsive calendar">
     <thead class="thead-inverse">
     <tr>
@@ -147,8 +148,25 @@ HTML;
 }
 
 ?>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="index.html">Scheduling Admin</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="manage.php">Manage</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="view.php">View <span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+    </div>
+</nav>
 <div class="container">
-    <h2 align="center" class="title">Upcoming Appointments</h2>
     <?php
     $dbConn = new PDO(
         "mysql:host={$config['dbhost']};dbname={$config['dbname']};charset=utf8mb4",

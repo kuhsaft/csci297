@@ -72,6 +72,7 @@ function printForm(PDO $dbConn)
 
     // Calendar Header
     print <<<HTML
+<h2 align="center" class="title">Select Times to Add/Remove</h2>
 <form method="post" onsubmit="return confirmForm();">
     <table class="table table-responsive calendar">
         <thead class="thead-inverse">
@@ -91,7 +92,7 @@ HTML;
     // Calendar body
     $date = new DateTime();
     $date->setTime(0, 0, 0);
-    $date->sub(new DateInterval("P".date("w")."D")); // Get the first day of the week
+    $date->sub(new DateInterval("P" . date("w") . "D")); // Get the first day of the week
 
     $numWeeks = (date("w") === "0") ? 3 : 4; // Only show 3 weeks if current day is Sunday
 
@@ -102,7 +103,7 @@ HTML;
             $isToday = ($date->format("Y-m-d") === date("Y-m-d")) ? "today" : "";
 
             print "<td class=\"${isDisabled} ${isToday}\">";
-            print "<label class='month'>".$date->format("m/d")."</label>"; // Month label
+            print "<label class='month'>" . $date->format("m/d") . "</label>"; // Month label
 
             if (!isWeekend($date)) { // Only show times if valid day
                 $date->setTime(8, 0, 0);
@@ -119,7 +120,7 @@ HTML;
                         )) ? true : false;
                     $time .= $timeOffset;
 
-                    $timeSlotClass = 'time-slot'.($timeEnabled ? ' enabled' : '');
+                    $timeSlotClass = 'time-slot' . ($timeEnabled ? ' enabled' : '');
                     $name = $timeEnabled ? "remove[${day}][]" : "insert[${day}][]";
                     $label = $date->format("h:i A");
                     $id = $date->format("F jS") . " at " . $label;
@@ -225,9 +226,9 @@ function handlePost(PDO $dbConn)
             $date->setTime(0, 0, 0);
 
             if ($date === false) {
-                $errors[] = 'Invalid day: '.$day.'.';
+                $errors[] = 'Invalid day: ' . $day . '.';
             } elseif (!isDateValid($date)) {
-                $errors[] = 'Invalid day: '.$date->format("m/d").'.';
+                $errors[] = 'Invalid day: ' . $date->format("m/d") . '.';
             } else {
                 $monthDay = $date->format("m/d");
 
@@ -239,9 +240,9 @@ function handlePost(PDO $dbConn)
                 foreach ($times as $time) {
                     $datetime = DateTime::createFromFormat(DateTime::ISO8601, "${day}T${time}");
                     if ($datetime === false) {
-                        $dateErrors[$monthDay][] = 'Invalid time: '.$time;
+                        $dateErrors[$monthDay][] = 'Invalid time: ' . $time;
                     } elseif (!isTimeValid($datetime)) {
-                        $dateErrors[$monthDay][] = 'Invalid time: '.$datetime->format("h:i A");
+                        $dateErrors[$monthDay][] = 'Invalid time: ' . $datetime->format("h:i A");
                     } else {
                         if ($operation == 'insert') {
                             $datesToAdd[] = $datetime;
@@ -267,10 +268,25 @@ function handlePost(PDO $dbConn)
 }
 
 ?>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="index.html">Scheduling Admin</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="manage.php">Manage <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="view.php">View</a>
+            </li>
+        </ul>
+    </div>
+</nav>
 <div class="container">
-    <h2 align="center" class="title">Manage Available Times for Advising</h2>
-    <h4 align="center" class="subtitle">Select Times to Add/Remove</h4>
     <?php
     $dbConn = new PDO(
         "mysql:host={$config['dbhost']};dbname={$config['dbname']};charset=utf8mb4",
@@ -295,6 +311,15 @@ function handlePost(PDO $dbConn)
 <script
         src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+        integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+        integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
         crossorigin="anonymous"></script>
 <script type="application/javascript" src="manage.js"></script>
 </body>
